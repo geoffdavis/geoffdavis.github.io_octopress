@@ -1,16 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-11T12:35:58-07:00</updated>
+  <updated>2014-08-11T13:12:45-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Geoff Davis]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Installing Obspy for Antelope 5.4 on RHEL/CentOS 6]]></title>
+    <link href="http://geoffdavis.github.io/blog/2014/08/11/installing-obspy-for-antelope-5-dot-4-on-rhel-slash-centos-6/"/>
+    <updated>2014-08-11T12:37:34-07:00</updated>
+    <id>http://geoffdavis.github.io/blog/2014/08/11/installing-obspy-for-antelope-5-dot-4-on-rhel-slash-centos-6</id>
+    <content type="html"><![CDATA[<h1>Background</h1>
+
+<p>The <a href="obspy.org">obspy framework</a> is a set of Python libraries for observational seismology. It includes a number of routines to retrieve and process seismic data in a variety of formats.</p>
+
+<p><a href="brtt.com">Antelope</a> is a commercial data acquisition and processing system for environmental data, with a heavy emphasis on seismic data. Many regional seismic networks use Antelope to acquire, process, and exchange seismic data. Starting with version 5.2, it has included Python bindings for many of it’s core routines for databases and real-time data.</p>
+
+<p>The Obspy framework combined with Antelope represents a best-of-breed combination of interoperability with other seismic data formats and rapid application development. However, due to possible licensing restrictions, BRTT does not currently distribute Obspy.</p>
+
+<p>BRTT ships their own distribution of Python with Antelope, so just installing the system packages for <code>scipy</code> and <code>numpy</code> included with RHEL is not an acceptable solution. You would not get access to the Antelope routines from Obspy installed in this fashion.</p>
+
+<p>Obspy has a number of dependencies, some of which conflict with libraries shipped with Antelope. In particular, the Numpy is not configured with some required external dependencies such as <code>BLAS</code> and <code>LAPACK</code> that <code>Scipy</code> (another <code>Obspy</code> dependency) requires.</p>
+
+<p>Thus, there are two ways to go about working around this issue:
+ * Install a newer version of Numpy or overwrite the existing numpy library in the <code>/opt/antelope/python2.7.6/site-packages</code> directly
+ * Install into a different <code>site-packages</code> directory outside of the BRTT-supplied directories.</p>
+
+<p>The first approach, putting all of the new packages including this upgraded <code>numpy</code> module in the BRTT <code>site-packages</code> directory, introduces the possibility of compatibility issues with BRTT-supplied code (such as <code>orbrtd</code>) that may depend on their version of <code>numpy</code> (1.7.1). In practice there haven’t been any reported compatibility problems, but it’s best to not step on BRTT’s supported version of the software any more than you have to.</p>
+
+<p>The second approach requires a bit more work on your end, but it ensures that BRTT-written programs will not have compatibility issues with any upgraded libraries.</p>
+
+<p>My facility uses the second approach, but it’s tied to our own <code>/opt/anf</code> overlay to <code>/opt/antelope</code>. If you are sharing code with a number of users at a side, setting up an overlay tree for Antelope is a really good way to keep your code in revision control and provide it to all users on your system without modifying the BRTT <code>/opt/antelope</code> tree extensively. See the utility build_sourcetree in the Antelope contributed software repository on how to get off the ground with your own overlay.</p>
+
+<p>For the purposes of this installation, I will assume that your site does not have a overlay, and that you want obspy to be available to all users on your system. Thus, we will choose the directory <code>/opt/antelope/local/lib/python2.7</code> as a place to install the obspy packages, and the binaries will go in <code>/opt/antelope/local/bin</code></p>
+
+<h1>Prerequisites</h1>
+
+<ol>
+<li>A working installation of Antelope 5.4 or later</li>
+<li>&hellip; on a RHEL or CentOS 6 OS</li>
+<li>&hellip; with the development tools installed (<code>yum -y groupinstall “Development tools”</code>)</li>
+<li>Your shell environment set up with the Antelope environment (<code>source /opt/antelope/5.4/setup.sh for bourne shells</code>)</li>
+</ol>
+
+
+<p>The instructions below assume you are using Bash or another Bourne-compatible shell. There’s no reason this wouldn’t work in CSH, but you’ll need to translate any environment variable commands to their Csh-equivalent yourself.</p>
+
+<h1>Installation</h1>
+
+<h2>Step 0: Verify your Antelope environment is set up correctly</h2>
+
+<pre><code>[[ -z "$ANTELOPE" ]] &amp;&amp; echo "ANTELOPE ENVIRONMENT IS NOT SET CORRECTLY” || echo Antelope is OK
+</code></pre>
+
+<p>If that doesn’t come back with “Antelope is OK”, you need to source the Antelope environment</p>
+
+<pre><code>which easy_install | grep antelope || echo "You're not using the right easy_install"
+</code></pre>
+
+<p>If that complains that you’re not using the right <code>easy_install</code>, your path may be messed up. <em>Make sure that the Antelope Python path comes before any other <code>PATH</code> statements.</em></p>
+
+<h2>Step 1: Install system library dependencies</h2>
+
+<pre><code class="shell">yum install -y lapack-devel blas-devel
+</code></pre>
+
+<h2>Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily</h2>
+
+<pre><code class="shell">pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
+bindir=/opt/antelope/local/bin
+export PYTHONPATH=$pydir
+mkdir -p $pymoddir
+mkdir -p $bindir
+export EASY_INSTALL_ARGS="-d $pymoddir -s $bindir -N"
+unset pymodir
+unset bindir
+</code></pre>
+
+<h2>Step 3: Install numpy</h2>
+
+<p>The latest version of <code>numpy</code> as of this writing (<em>1.8.0</em>) has a bug with it’s <code>f2py</code> code that prevents Scipy from working properly. <strong>Use <em>1.7.2</em> instead.</strong></p>
+
+<p>If all goes right, the numpy installer will find BLAS and LAPACK and link against them.</p>
+
+<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
+</code></pre>
+
+<h2>Step 4: Install scipy</h2>
+
+<p>Scipy’s installer bugs out if you don’t explicitly set the <code>CC</code> and <code>CXX</code> variables.</p>
+
+<pre><code class="shell">CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
+</code></pre>
+
+<h2>Step 5: Install a couple of other dependencies</h2>
+
+<p>You’ll also need <code>lxml</code>, <code>suds</code>, and <code>sqlalchemy</code>.</p>
+
+<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) lxml
+easy_install $(EASY_INSTALL_ARGS) suds
+easy_install $(EASY_INSTALL_ARGS) sqlalchemy
+</code></pre>
+
+<h2>Step 6: Install obspy itself</h2>
+
+<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) obspy
+</code></pre>
+
+<h1>Usage</h1>
+
+<p>In order to actually use the obspy libraries in code, you’ll need to remember to include the <code>/opt/antelope/local</code> tree in your Python search path. There are a couple of ways to make this work. The best way (which ensures that nothing weird will happen with core BRTT programs) is to explicitly modify the python search path in your code itself.</p>
+
+<p>If you set your <code>PYTHONPATH</code> to <code>/opt/antelope/local/lib/python2.7</code>, things will probably work but you run the risk of odd behavior with core Antelope programs.</p>
+
+<p>Thus, it’s recommended that each program is prefixed with a line like</p>
+
+<pre><code class="python">import site; import sys; site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+</code></pre>
+
+<p>It’s important to use <code>site.addsitedir</code> instead of <code>sys.path.append</code> because the latter doesn&rsquo;t evaluate <code>easy_install.pth</code>, and thus Python won’t see any of the new modules you installed.</p>
+
+<p>A full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:</p>
+
+<pre><code class="python">import os
+import sys
+import site
+
+import signal
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+sys.path.append(os.environ['ANTELOPE'] + "/data/python")
+site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+</code></pre>
+]]></content>
+  </entry>
   
 </feed>
