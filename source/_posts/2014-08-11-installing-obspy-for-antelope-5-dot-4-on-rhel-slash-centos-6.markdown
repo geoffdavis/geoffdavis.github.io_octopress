@@ -23,6 +23,7 @@ BRTT ships their own distribution of Python with Antelope, so just installing th
 Obspy has a number of dependencies, some of which conflict with libraries shipped with Antelope. In particular, the Numpy is not configured with some required external dependencies such as `BLAS` and `LAPACK` that `Scipy` (another `Obspy` dependency) requires.
 
 Thus, there are two ways to go about working around this issue:
+
  * Install a newer version of Numpy or overwrite the existing numpy library in the `/opt/antelope/python2.7.6/site-packages` directly
  * Install into a different `site-packages` directory outside of the BRTT-supplied directories.
 
