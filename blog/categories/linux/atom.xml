@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-11T13:12:45-07:00</updated>
+  <updated>2014-08-11T13:17:27-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
     <name><![CDATA[Geoff Davis]]></name>
@@ -30,9 +30,13 @@
 
 <p>Obspy has a number of dependencies, some of which conflict with libraries shipped with Antelope. In particular, the Numpy is not configured with some required external dependencies such as <code>BLAS</code> and <code>LAPACK</code> that <code>Scipy</code> (another <code>Obspy</code> dependency) requires.</p>
 
-<p>Thus, there are two ways to go about working around this issue:
- * Install a newer version of Numpy or overwrite the existing numpy library in the <code>/opt/antelope/python2.7.6/site-packages</code> directly
- * Install into a different <code>site-packages</code> directory outside of the BRTT-supplied directories.</p>
+<p>Thus, there are two ways to go about working around this issue:</p>
+
+<ul>
+<li>Install a newer version of Numpy or overwrite the existing numpy library in the <code>/opt/antelope/python2.7.6/site-packages</code> directly</li>
+<li>Install into a different <code>site-packages</code> directory outside of the BRTT-supplied directories.</li>
+</ul>
+
 
 <p>The first approach, putting all of the new packages including this upgraded <code>numpy</code> module in the BRTT <code>site-packages</code> directory, introduces the possibility of compatibility issues with BRTT-supplied code (such as <code>orbrtd</code>) that may depend on their version of <code>numpy</code> (1.7.1). In practice there haven’t been any reported compatibility problems, but it’s best to not step on BRTT’s supported version of the software any more than you have to.</p>
 
