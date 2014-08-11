@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Sysadmin | Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/blog/categories/sysadmin/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-11T13:17:27-07:00</updated>
+  <updated>2014-08-11T13:43:19-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
     <name><![CDATA[Geoff Davis]]></name>
@@ -132,9 +132,11 @@ easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 
 <p>It’s important to use <code>site.addsitedir</code> instead of <code>sys.path.append</code> because the latter doesn&rsquo;t evaluate <code>easy_install.pth</code>, and thus Python won’t see any of the new modules you installed.</p>
 
+<h2>In iPython or as a standalone script</h2>
+
 <p>A full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:</p>
 
-<pre><code class="python">import os
+<pre><code class="python Paste this into a standalone script or iPython">import os
 import sys
 import site
 
@@ -144,6 +146,53 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 sys.path.append(os.environ['ANTELOPE'] + "/data/python")
 site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+</code></pre>
+
+<h2>As an <code>.xpy</code> file</h2>
+
+<p>If you use the ANTELOPEMAKE structure to build Antelope programs, there is afile type called .xpy that will configure your script with a preamble similar to the iPython blurb above, <em>except it does not include the last line.</em></p>
+
+<p>Every <code>xpy</code> file that makes use of the <code>obspy</code> code will need the following line pre-pended to the file before any <code>obspy</code> module imports are made (Not that the standard xpy header already imports <code>os</code> and <code>sys</code> for you):</p>
+
+<pre><code class="python">site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+</code></pre>
+
+<p>The following <code>example.xpy</code> will get &ldquo;compiled&rdquo; into a script named <code>example</code>:</p>
+
+<pre><code class="python example.xpy">site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+
+import numpy as np
+import matplotlib.pyplot as plt
+from obspy.core import UTCDateTime
+from obspy.arclink import Client
+from obspy.signal import cornFreq2Paz, seisSim
+
+client = Client(user='test@obspy.de')
+
+t = UTCDateTime('2009-08-24 00:20:03')
+st = client.getWaveform('BW', 'RJOB', '', 'EHZ', t, t + 30)
+pas = client.getPAZ('BW', 'RJOB', '', 'EHZ', t)
+
+# 1Hz instrument
+one_hertz = cornFreq2Paz(1.0)
+
+# Correct for frequency response of the instrument
+res = res / paz['sensitivity`]
+
+# Plot the seismograms
+sec = np.arange(len(res)) /st[0].stats.sampling_rate
+
+plt.subplot(211)
+plt.plot(sec, st[0].data, 'k')
+plt.title("%s %s" % (st[0].stats.station, t))
+plt.ylabel('STS-2')
+
+plt.subplot(212)
+plt.plot(sec, res, 'k')
+plt.xlabel('Time [s]')
+plt.ylabel('1Hz CornerFrequency')
+
+plt.show()
 </code></pre>
 ]]></content>
   </entry>
