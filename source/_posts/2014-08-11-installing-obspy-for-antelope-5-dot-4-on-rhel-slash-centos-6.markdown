@@ -18,15 +18,15 @@ The [obspy framework](obspy.org) is a set of Python libraries for observational 
 
 The Obspy framework combined with Antelope represents a best-of-breed combination of interoperability with other seismic data formats and rapid application development. However, due to possible licensing restrictions, BRTT does not currently distribute Obspy.
 
-BRTT ships their own distribution of Python with Antelope, so just installing the system packages for scipy and numpy included with RHEL is not an acceptable solution. You would not get access to the Antelope routines from Obspy installed in this fashion.
+BRTT ships their own distribution of Python with Antelope, so just installing the system packages for `scipy` and `numpy` included with RHEL is not an acceptable solution. You would not get access to the Antelope routines from Obspy installed in this fashion.
 
-Obspy has a number of dependencies, some of which conflict with libraries shipped with Antelope. In particular, the Numpy is not configured with some required external dependencies such as BLAS and LAPACK that Scipy (another Obspy dependency) requires.
+Obspy has a number of dependencies, some of which conflict with libraries shipped with Antelope. In particular, the Numpy is not configured with some required external dependencies such as `BLAS` and `LAPACK` that `Scipy` (another `Obspy` dependency) requires.
 
 Thus, there are two ways to go about working around this issue:
  * Install a newer version of Numpy or overwrite the existing numpy library in the `/opt/antelope/python2.7.6/site-packages` directly
- * Install into a different site-packages directory outside of the BRTT-supplied directories.
+ * Install into a different `site-packages` directory outside of the BRTT-supplied directories.
 
-The first approach, putting all of the new packages including this upgraded numpy module in the BRTT site-packages directory, introduces the possibility of compatibility issues with BRTT-supplied code (such as orbrtd) that may depend on their version of `numpy` (1.7.1). In practice there haven’t been any reported compatibility problems, but it’s best to not step on BRTT’s supported version of the software any more than you have to.
+The first approach, putting all of the new packages including this upgraded `numpy` module in the BRTT `site-packages` directory, introduces the possibility of compatibility issues with BRTT-supplied code (such as `orbrtd`) that may depend on their version of `numpy` (1.7.1). In practice there haven’t been any reported compatibility problems, but it’s best to not step on BRTT’s supported version of the software any more than you have to.
 
 The second approach requires a bit more work on your end, but it ensures that BRTT-written programs will not have compatibility issues with any upgraded libraries.
 
@@ -36,10 +36,11 @@ For the purposes of this installation, I will assume that your site does not hav
 
 # Prerequisites
 
-A working installation of Antelope 5.4 or later
-… on a RHEL or CentOS 6 OS
-… with the development tools installed (`yum -y groupinstall “Development tools”`)
-Your shell environment set up with the Antelope environment (`source /opt/antelope/5.4/setup.sh for bourne shells`)
+1. A working installation of Antelope 5.4 or later
+2. ... on a RHEL or CentOS 6 OS
+3. ... with the development tools installed (`yum -y groupinstall “Development tools”`)
+4. Your shell environment set up with the Antelope environment (`source /opt/antelope/5.4/setup.sh for bourne shells`)
+
 The instructions below assume you are using Bash or another Bourne-compatible shell. There’s no reason this wouldn’t work in CSH, but you’ll need to translate any environment variable commands to their Csh-equivalent yourself.
 
 # Installation
@@ -63,10 +64,14 @@ yum install -y lapack-devel blas-devel
 ## Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily
 
 ```shell
-export PYTHONPATH=/opt/antelope/local/lib/python$(getid python_mainversion)
-mkdir -p /opt/antelope/local/lib/python2.7
-mkdir -p /opt/antelope/local/bin
-export EASY_INSTALL_ARGS="-d /opt/antelope/local/lib/python2.7 -s /opt/antelope/local/bin -N"
+pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
+bindir=/opt/antelope/local/bin
+export PYTHONPATH=$pydir
+mkdir -p $pymoddir
+mkdir -p $bindir
+export EASY_INSTALL_ARGS="-d $pymoddir -s $bindir -N"
+unset pymodir
+unset bindir
 ```
 
 ## Step 3: Install numpy
@@ -107,17 +112,17 @@ easy_install $(EASY_INSTALL_ARGS) obspy
 
 In order to actually use the obspy libraries in code, you’ll need to remember to include the `/opt/antelope/local` tree in your Python search path. There are a couple of ways to make this work. The best way (which ensures that nothing weird will happen with core BRTT programs) is to explicitly modify the python search path in your code itself.
 
-If you set your `PYTHONPATH` to `/opt/antelope/local/lib/python2.7`, things will probably work but you run the risk of odd behavior with core Antelpoe programs.
+If you set your `PYTHONPATH` to `/opt/antelope/local/lib/python2.7`, things will probably work but you run the risk of odd behavior with core Antelope programs.
 
 Thus, it’s recommended that each program is prefixed with a line like
 
 ```python
-import site; site.addsitedir('/opt/antelope/local/lib/python2.7’)
+import site; import sys; site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
 ```
 
-It’s important to use `site.addsitedir` instead of `sys.path.append` because the latter doesn’t cause `easy_install.pth` to work, and thus Python won’t see any of the new modules you installed.
+It’s important to use `site.addsitedir` instead of `sys.path.append` because the latter doesn't evaluate `easy_install.pth`, and thus Python won’t see any of the new modules you installed.
 
-Thus, a full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:
+A full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:
 
 ```python
 import os
@@ -129,5 +134,5 @@ import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 sys.path.append(os.environ['ANTELOPE'] + "/data/python")
-site.addsitedir('/opt/antelope/local/lib/python2.7')
+site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
 ```
