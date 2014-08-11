@@ -58,13 +58,13 @@ If that complains that you’re not using the right `easy_install`, your path ma
 
 ## Step 1: Install system library dependencies
 
-```shell
+``` shell
 yum install -y lapack-devel blas-devel
 ```
 
 ## Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily
 
-```shell
+``` shell
 pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
 bindir=/opt/antelope/local/bin
 export PYTHONPATH=$pydir
@@ -81,7 +81,7 @@ The latest version of `numpy` as of this writing (*1.8.0*) has a bug with it’s
 
 If all goes right, the numpy installer will find BLAS and LAPACK and link against them.
 
-```shell
+``` shell
 easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
 ```
 
@@ -89,7 +89,7 @@ easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
 
 Scipy’s installer bugs out if you don’t explicitly set the `CC` and `CXX` variables.
 
-```shell
+``` shell
 CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
 ```
 
@@ -97,7 +97,7 @@ CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
 
 You’ll also need `lxml`, `suds`, and `sqlalchemy`.
 
-```shell
+``` shell
 easy_install $(EASY_INSTALL_ARGS) lxml
 easy_install $(EASY_INSTALL_ARGS) suds
 easy_install $(EASY_INSTALL_ARGS) sqlalchemy
@@ -105,7 +105,7 @@ easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 
 ## Step 6: Install obspy itself
 
-```shell
+``` shell
 easy_install $(EASY_INSTALL_ARGS) obspy
 ```
 
@@ -117,15 +117,17 @@ If you set your `PYTHONPATH` to `/opt/antelope/local/lib/python2.7`, things will
 
 Thus, it’s recommended that each program is prefixed with a line like
 
-```python
+``` python
 import site; import sys; site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
 ```
 
 It’s important to use `site.addsitedir` instead of `sys.path.append` because the latter doesn't evaluate `easy_install.pth`, and thus Python won’t see any of the new modules you installed.
 
+## In iPython or as a standalone script
+
 A full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:
 
-```python
+``` python Paste this into a standalone script or iPython
 import os
 import sys
 import site
@@ -136,4 +138,53 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 sys.path.append(os.environ['ANTELOPE'] + "/data/python")
 site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+```
+
+## As an `.xpy` file
+
+If you use the ANTELOPEMAKE structure to build Antelope programs, there is afile type called .xpy that will configure your script with a preamble similar to the iPython blurb above, *except it does not include the last line.*
+
+Every `xpy` file that makes use of the `obspy` code will need the following line pre-pended to the file before any `obspy` module imports are made (Not that the standard xpy header already imports `os` and `sys` for you):
+
+``` python
+site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+```
+
+The following `example.xpy` will get "compiled" into a script named `example`:
+
+``` python example.xpy
+site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+
+import numpy as np
+import matplotlib.pyplot as plt
+from obspy.core import UTCDateTime
+from obspy.arclink import Client
+from obspy.signal import cornFreq2Paz, seisSim
+
+client = Client(user='test@obspy.de')
+
+t = UTCDateTime('2009-08-24 00:20:03')
+st = client.getWaveform('BW', 'RJOB', '', 'EHZ', t, t + 30)
+pas = client.getPAZ('BW', 'RJOB', '', 'EHZ', t)
+
+# 1Hz instrument
+one_hertz = cornFreq2Paz(1.0)
+
+# Correct for frequency response of the instrument
+res = res / paz['sensitivity`]
+
+# Plot the seismograms
+sec = np.arange(len(res)) /st[0].stats.sampling_rate
+
+plt.subplot(211)
+plt.plot(sec, st[0].data, 'k')
+plt.title("%s %s" % (st[0].stats.station, t))
+plt.ylabel('STS-2')
+
+plt.subplot(212)
+plt.plot(sec, res, 'k')
+plt.xlabel('Time [s]')
+plt.ylabel('1Hz CornerFrequency')
+
+plt.show()
 ```
