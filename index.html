@@ -118,9 +118,9 @@
 
 <p>The second approach requires a bit more work on your end, but it ensures that BRTT-written programs will not have compatibility issues with any upgraded libraries.</p>
 
-<p>My facility uses the second approach, but it’s tied to our own <code>/opt/anf</code> overlay to <code>/opt/antelope</code>. If you are sharing code with a number of users at a side, setting up an overlay tree for Antelope is a really good way to keep your code in revision control and provide it to all users on your system without modifying the BRTT <code>/opt/antelope</code> tree extensively. See the utility build_sourcetree in the Antelope contributed software repository on how to get off the ground with your own overlay.</p>
+<p>My facility uses the second approach, but it’s tied to our own <code>/opt/anf</code> overlay to <code>/opt/antelope</code>. If you are sharing code with a number of users at a side, setting up an overlay tree for Antelope is a really good way to keep your code in revision control and provide it to all users on your system without modifying the BRTT <code>/opt/antelope</code> tree extensively. See the utility <code>build_sourcetree</code> in the <a href="https://github.com/antelopeusersgroup/antelope_contrib">Antelope contributed software repository</a> on how to get off the ground with your own overlay.</p>
 
-<p>For the purposes of this installation, I will assume that your site does not have a overlay, and that you want obspy to be available to all users on your system. Thus, we will choose the directory <code>/opt/antelope/local/lib/python2.7</code> as a place to install the obspy packages, and the binaries will go in <code>/opt/antelope/local/bin</code></p>
+<p>For the purposes of this installation, I will assume that your site does not have a <code>build_sourcetree</code>-style overlay, and that you want obspy to be available to all users on your system. Thus, we will choose the directory <code>/opt/antelope/local/lib/python2.7</code> as a place to install the obspy packages, and the binaries will go in <code>/opt/antelope/local/bin</code>.</p>
 
 <h1>Prerequisites</h1>
 
@@ -128,7 +128,7 @@
 <li>A working installation of Antelope 5.4 or later</li>
 <li>&hellip; on a RHEL or CentOS 6 OS</li>
 <li>&hellip; with the development tools installed (<code>yum -y groupinstall “Development tools”</code>)</li>
-<li>Your shell environment set up with the Antelope environment (<code>source /opt/antelope/5.4/setup.sh for bourne shells</code>)</li>
+<li>Your shell environment must be set up with the Antelope environment - For Bourne-style shells, run <code>source /opt/antelope/5.4/setup.sh</code></li>
 </ol>
 
 
@@ -138,10 +138,14 @@
 
 <h2>Step 0: Verify your Antelope environment is set up correctly</h2>
 
+<p>Run this command:</p>
+
 <pre><code>[[ -z "$ANTELOPE" ]] &amp;&amp; echo "ANTELOPE ENVIRONMENT IS NOT SET CORRECTLY” || echo Antelope is OK
 </code></pre>
 
 <p>If that doesn’t come back with “Antelope is OK”, you need to source the Antelope environment</p>
+
+<p>Now, run this command:</p>
 
 <pre><code>which easy_install | grep antelope || echo "You're not using the right easy_install"
 </code></pre>
@@ -165,11 +169,19 @@ unset pymodir
 unset bindir
 </code></pre>
 
+<p>There&rsquo;s a couple of things going on in that blob of shell commands that are worth noting. First is the usage of the Antelope command <code>getid</code>. This program allows you to get a bunch of configuration information from Antelope, including the Python version in use. Run the command <code>getid -a</code> for a list of all of the information that <code>getid</code> can report.</p>
+
+<p>Note that we could have also gotten the python major and minor version (python_mainversion above) by running a python one-liner: <code>python -c 'import sys; sys.version[:3]'</code></p>
+
+<p>Secondly, the <code>EASY_INSTALL_ARGS</code> variable is being set just to save us some typing in later commands.</p>
+
+<p>Finally, unless we set <code>PYTHON_PATH</code> temporarily, <code>easy_install</code> will complain that the directory we are trying to install modules into is not part of the Python search path and will refuse to run.</p>
+
 <h2>Step 3: Install numpy</h2>
 
 <p>The latest version of <code>numpy</code> as of this writing (<em>1.8.0</em>) has a bug with it’s <code>f2py</code> code that prevents Scipy from working properly. <strong>Use <em>1.7.2</em> instead.</strong></p>
 
-<p>If all goes right, the numpy installer will find BLAS and LAPACK and link against them.</p>
+<p>If all goes right, the numpy installer will find <code>BLAS</code> and <code>LAPACK</code> and link against them. You can safely ignore any warnings about <a href="http://math-atlas.sourceforge.net/">Atlas</a>, unless you feel that you will need the <em>Atlas</em> routines.</p>
 
 <pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
 </code></pre>
@@ -208,9 +220,9 @@ easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 
 <p>It’s important to use <code>site.addsitedir</code> instead of <code>sys.path.append</code> because the latter doesn&rsquo;t evaluate <code>easy_install.pth</code>, and thus Python won’t see any of the new modules you installed.</p>
 
-<h2>In iPython or as a standalone script</h2>
+<h2>In <code>iPython</code> or as a standalone script</h2>
 
-<p>A full pasteable blurb that should get iPython ready to use obspy and Antelope looks like this:</p>
+<p>A full pasteable blurb that should get <code>iPython</code> ready to use <em>Obspy</em> and <em>Antelope</em> looks like this:</p>
 
 <pre><code class="python Paste this into a standalone script or iPython">import os
 import sys
