@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Antelope | Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/blog/categories/antelope/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-12T08:59:08-07:00</updated>
+  <updated>2014-08-13T11:29:58-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
     <name><![CDATA[Geoff Davis]]></name>
@@ -78,12 +78,12 @@
 
 <h2>Step 1: Install system library dependencies</h2>
 
-<pre><code class="shell">yum install -y lapack-devel blas-devel
+<pre><code class="bash">yum install -y lapack-devel blas-devel
 </code></pre>
 
 <h2>Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily</h2>
 
-<pre><code class="shell">pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
+<pre><code class="bash">pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
 bindir=/opt/antelope/local/bin
 export PYTHONPATH=$pydir
 mkdir -p $pymoddir
@@ -107,28 +107,28 @@ unset bindir
 
 <p>If all goes right, the numpy installer will find <code>BLAS</code> and <code>LAPACK</code> and link against them. You can safely ignore any warnings about <a href="http://math-atlas.sourceforge.net/">Atlas</a>, unless you feel that you will need the <em>Atlas</em> routines.</p>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
+<pre><code class="bash">easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
 </code></pre>
 
 <h2>Step 4: Install scipy</h2>
 
 <p>Scipy’s installer bugs out if you don’t explicitly set the <code>CC</code> and <code>CXX</code> variables.</p>
 
-<pre><code class="shell">CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
+<pre><code class="bash">CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
 </code></pre>
 
 <h2>Step 5: Install a couple of other dependencies</h2>
 
 <p>You’ll also need <code>lxml</code>, <code>suds</code>, and <code>sqlalchemy</code>.</p>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) lxml
+<pre><code class="bash">easy_install $(EASY_INSTALL_ARGS) lxml
 easy_install $(EASY_INSTALL_ARGS) suds
 easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 </code></pre>
 
 <h2>Step 6: Install obspy itself</h2>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) obspy
+<pre><code class="bash">easy_install $(EASY_INSTALL_ARGS) obspy
 </code></pre>
 
 <h1>Usage</h1>

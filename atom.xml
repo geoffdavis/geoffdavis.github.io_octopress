@@ -4,7 +4,7 @@
   <title><![CDATA[Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-12T08:59:08-07:00</updated>
+  <updated>2014-08-13T11:29:58-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
     <name><![CDATA[Geoff Davis]]></name>
@@ -78,20 +78,31 @@
 
 <h2>Step 1: Install system library dependencies</h2>
 
-<pre><code class="shell">yum install -y lapack-devel blas-devel
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install -y lapack-devel blas-devel
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily</h2>
 
-<pre><code class="shell">pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
-bindir=/opt/antelope/local/bin
-export PYTHONPATH=$pydir
-mkdir -p $pymoddir
-mkdir -p $bindir
-export EASY_INSTALL_ARGS="-d $pymoddir -s $bindir -N"
-unset pymodir
-unset bindir
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">pymoddir</span><span class="o">=</span>/opt/antelope/local/lib/python<span class="k">$(</span>getid python_mainversion<span class="k">)</span>
+</span><span class='line'><span class="nv">bindir</span><span class="o">=</span>/opt/antelope/local/bin
+</span><span class='line'><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$pydir</span>
+</span><span class='line'>mkdir -p <span class="nv">$pymoddir</span>
+</span><span class='line'>mkdir -p <span class="nv">$bindir</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">EASY_INSTALL_ARGS</span><span class="o">=</span><span class="s2">&quot;-d $pymoddir -s $bindir -N&quot;</span>
+</span><span class='line'><span class="nb">unset </span>pymodir
+</span><span class='line'><span class="nb">unset </span>bindir
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>There&rsquo;s a couple of things going on in that blob of shell commands that are worth noting. First is the usage of the Antelope command <code>getid</code>. This program allows you to get a bunch of configuration information from Antelope, including the Python version in use. Run the command <code>getid -a</code> for a list of all of the information that <code>getid</code> can report.</p>
 
@@ -107,29 +118,39 @@ unset bindir
 
 <p>If all goes right, the numpy installer will find <code>BLAS</code> and <code>LAPACK</code> and link against them. You can safely ignore any warnings about <a href="http://math-atlas.sourceforge.net/">Atlas</a>, unless you feel that you will need the <em>Atlas</em> routines.</p>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> <span class="nv">numpy</span><span class="o">==</span>1.7.2
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Step 4: Install scipy</h2>
 
 <p>Scipy’s installer bugs out if you don’t explicitly set the <code>CC</code> and <code>CXX</code> variables.</p>
 
-<pre><code class="shell">CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">CC</span><span class="o">=</span>/usr/bin/gcc <span class="nv">CXX</span><span class="o">=</span>/usr/bin/g++ easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> scipy
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Step 5: Install a couple of other dependencies</h2>
 
 <p>You’ll also need <code>lxml</code>, <code>suds</code>, and <code>sqlalchemy</code>.</p>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) lxml
-easy_install $(EASY_INSTALL_ARGS) suds
-easy_install $(EASY_INSTALL_ARGS) sqlalchemy
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> lxml
+</span><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> suds
+</span><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> sqlalchemy
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Step 6: Install obspy itself</h2>
 
-<pre><code class="shell">easy_install $(EASY_INSTALL_ARGS) obspy
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> obspy
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h1>Usage</h1>
 
@@ -139,8 +160,10 @@ easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 
 <p>Thus, it’s recommended that each program is prefixed with a line like</p>
 
-<pre><code class="python">import site; import sys; site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">site</span><span class="p">;</span> <span class="kn">import</span> <span class="nn">sys</span><span class="p">;</span> <span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="s">&#39;/opt/antelope/local/lib/python&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>It’s important to use <code>site.addsitedir</code> instead of <code>sys.path.append</code> because the latter doesn&rsquo;t evaluate <code>easy_install.pth</code>, and thus Python won’t see any of the new modules you installed.</p>
 
@@ -148,17 +171,28 @@ easy_install $(EASY_INSTALL_ARGS) sqlalchemy
 
 <p>A full pasteable blurb that should get <code>iPython</code> ready to use <em>Obspy</em> and <em>Antelope</em> looks like this:</p>
 
-<pre><code class="python Paste this into a standalone script or iPython">import os
-import sys
-import site
+<figure class='code'><figcaption><span>Paste this into a standalone script or iPython</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">site</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">signal</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIG_DFL</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;ANTELOPE&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;/data/python&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="s">&#39;/opt/antelope/local/lib/python&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
 
-import signal
-
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-sys.path.append(os.environ['ANTELOPE'] + "/data/python")
-site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
-</code></pre>
 
 <h2>As an <code>.xpy</code> file</h2>
 
@@ -166,46 +200,83 @@ site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
 
 <p>Every <code>xpy</code> file that makes use of the <code>obspy</code> code will need the following line pre-pended to the file before any <code>obspy</code> module imports are made (Not that the standard xpy header already imports <code>os</code> and <code>sys</code> for you):</p>
 
-<pre><code class="python">site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="s">&#39;/opt/antelope/local/lib/python&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>The following <code>example.xpy</code> will get &ldquo;compiled&rdquo; into a script named <code>example</code>:</p>
 
-<pre><code class="python example.xpy">site.addsitedir('/opt/antelope/local/lib/python' + sys.version[:3])
+<figure class='code'><figcaption><span>example.xpy</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="s">&#39;/opt/antelope/local/lib/python&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">obspy.core</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">obspy.arclink</span> <span class="kn">import</span> <span class="n">Client</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">obspy.signal</span> <span class="kn">import</span> <span class="n">cornFreq2Paz</span><span class="p">,</span> <span class="n">seisSim</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="s">&#39;test@obspy.de&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">t</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s">&#39;2009-08-24 00:20:03&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">st</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getWaveform</span><span class="p">(</span><span class="s">&#39;BW&#39;</span><span class="p">,</span> <span class="s">&#39;RJOB&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;EHZ&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">30</span><span class="p">)</span>
+</span><span class='line'><span class="n">pas</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">getPAZ</span><span class="p">(</span><span class="s">&#39;BW&#39;</span><span class="p">,</span> <span class="s">&#39;RJOB&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;EHZ&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 1Hz instrument</span>
+</span><span class='line'><span class="n">one_hertz</span> <span class="o">=</span> <span class="n">cornFreq2Paz</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Correct for frequency response of the instrument</span>
+</span><span class='line'><span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">/</span> <span class="n">paz</span><span class="p">[</span><span class="s">&#39;sensitivity`]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Plot the seismograms</span>
+</span><span class='line'><span class="n">sec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">))</span> <span class="o">/</span><span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">station</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;STS-2&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [s]&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;1Hz CornerFrequency&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
 
-import numpy as np
-import matplotlib.pyplot as plt
-from obspy.core import UTCDateTime
-from obspy.arclink import Client
-from obspy.signal import cornFreq2Paz, seisSim
-
-client = Client(user='test@obspy.de')
-
-t = UTCDateTime('2009-08-24 00:20:03')
-st = client.getWaveform('BW', 'RJOB', '', 'EHZ', t, t + 30)
-pas = client.getPAZ('BW', 'RJOB', '', 'EHZ', t)
-
-# 1Hz instrument
-one_hertz = cornFreq2Paz(1.0)
-
-# Correct for frequency response of the instrument
-res = res / paz['sensitivity`]
-
-# Plot the seismograms
-sec = np.arange(len(res)) /st[0].stats.sampling_rate
-
-plt.subplot(211)
-plt.plot(sec, st[0].data, 'k')
-plt.title("%s %s" % (st[0].stats.station, t))
-plt.ylabel('STS-2')
-
-plt.subplot(212)
-plt.plot(sec, res, 'k')
-plt.xlabel('Time [s]')
-plt.ylabel('1Hz CornerFrequency')
-
-plt.show()
-</code></pre>
 ]]></content>
   </entry>
   
