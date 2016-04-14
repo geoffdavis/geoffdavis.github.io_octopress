@@ -4,7 +4,7 @@
   <title><![CDATA[Servers and Scurvy]]></title>
   <link href="http://geoffdavis.github.io/atom.xml" rel="self"/>
   <link href="http://geoffdavis.github.io/"/>
-  <updated>2014-08-13T11:29:58-07:00</updated>
+  <updated>2016-04-14T10:22:04-07:00</updated>
   <id>http://geoffdavis.github.io/</id>
   <author>
     <name><![CDATA[Geoff Davis]]></name>
@@ -93,7 +93,7 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">pymoddir</span><span class="o">=</span>/opt/antelope/local/lib/python<span class="k">$(</span>getid python_mainversion<span class="k">)</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">pymoddir</span><span class="o">=</span>/opt/antelope/local/lib/python<span class="k">${</span><span class="nv">getid</span><span class="p"> python_mainversion</span><span class="k">}</span>
 </span><span class='line'><span class="nv">bindir</span><span class="o">=</span>/opt/antelope/local/bin
 </span><span class='line'><span class="nb">export </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$pydir</span>
 </span><span class='line'>mkdir -p <span class="nv">$pymoddir</span>
@@ -119,7 +119,7 @@
 <p>If all goes right, the numpy installer will find <code>BLAS</code> and <code>LAPACK</code> and link against them. You can safely ignore any warnings about <a href="http://math-atlas.sourceforge.net/">Atlas</a>, unless you feel that you will need the <em>Atlas</em> routines.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> <span class="nv">numpy</span><span class="o">==</span>1.7.2
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> <span class="nv">numpy</span><span class="o">==</span>1.7.2
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -128,7 +128,7 @@
 <p>Scipy’s installer bugs out if you don’t explicitly set the <code>CC</code> and <code>CXX</code> variables.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">CC</span><span class="o">=</span>/usr/bin/gcc <span class="nv">CXX</span><span class="o">=</span>/usr/bin/g++ easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> scipy
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">CC</span><span class="o">=</span>/usr/bin/gcc <span class="nv">CXX</span><span class="o">=</span>/usr/bin/g++ easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> scipy
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -139,16 +139,16 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> lxml
-</span><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> suds
-</span><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> sqlalchemy
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> lxml
+</span><span class='line'>easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> suds
+</span><span class='line'>easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> sqlalchemy
 </span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Step 6: Install obspy itself</h2>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">$(</span>EASY_INSTALL_ARGS<span class="k">)</span> obspy
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>easy_install <span class="k">${</span><span class="nv">EASY_INSTALL_ARGS</span><span class="k">}</span> obspy
 </span></code></pre></td></tr></table></div></figure>
 
 
