@@ -69,7 +69,7 @@ yum install -y lapack-devel blas-devel
 ## Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily
 
 ``` bash
-pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
+pymoddir=/opt/antelope/local/lib/python${getid python_mainversion}
 bindir=/opt/antelope/local/bin
 export PYTHONPATH=$pydir
 mkdir -p $pymoddir
@@ -94,7 +94,7 @@ The latest version of `numpy` as of this writing (*1.8.0*) has a bug with it’s
 If all goes right, the numpy installer will find `BLAS` and `LAPACK` and link against them. You can safely ignore any warnings about [Atlas](http://math-atlas.sourceforge.net/), unless you feel that you will need the *Atlas* routines.
 
 ``` bash
-easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
+easy_install ${EASY_INSTALL_ARGS} numpy==1.7.2
 ```
 
 ## Step 4: Install scipy
@@ -102,7 +102,7 @@ easy_install $(EASY_INSTALL_ARGS) numpy==1.7.2
 Scipy’s installer bugs out if you don’t explicitly set the `CC` and `CXX` variables.
 
 ``` bash
-CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
+CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install ${EASY_INSTALL_ARGS} scipy
 ```
 
 ## Step 5: Install a couple of other dependencies
@@ -110,15 +110,15 @@ CC=/usr/bin/gcc CXX=/usr/bin/g++ easy_install $(EASY_INSTALL_ARGS) scipy
 You’ll also need `lxml`, `suds`, and `sqlalchemy`.
 
 ``` bash
-easy_install $(EASY_INSTALL_ARGS) lxml
-easy_install $(EASY_INSTALL_ARGS) suds
-easy_install $(EASY_INSTALL_ARGS) sqlalchemy
+easy_install ${EASY_INSTALL_ARGS} lxml
+easy_install ${EASY_INSTALL_ARGS} suds
+easy_install ${EASY_INSTALL_ARGS} sqlalchemy
 ```
 
 ## Step 6: Install obspy itself
 
 ``` bash
-easy_install $(EASY_INSTALL_ARGS) obspy
+easy_install ${EASY_INSTALL_ARGS} obspy
 ```
 
 # Usage
