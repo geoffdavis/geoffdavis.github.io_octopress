@@ -69,9 +69,9 @@ yum install -y lapack-devel blas-devel
 ## Step 2: Create your local Python package tree and add it to your PYTHONPATH temporarily
 
 ``` bash
-pymoddir=/opt/antelope/local/lib/python${getid python_mainversion}
+pymoddir=/opt/antelope/local/lib/python$(getid python_mainversion)
 bindir=/opt/antelope/local/bin
-export PYTHONPATH=$pydir
+export PYTHONPATH=$pymoddir
 mkdir -p $pymoddir
 mkdir -p $bindir
 export EASY_INSTALL_ARGS="-d $pymoddir -s $bindir -N"
